@@ -1,0 +1,9 @@
+[script]
+domains = [ "danbooru.donmai.us" ]
+cookies = ""
+
+[test]
+url = ""
+tags = [ "general:something" ]
+
+[custom]
