@@ -1,0 +1,19 @@
+[package]
+authors = ["Hess Lewis <hesslewis@gmail.com>"]
+name = "tmdl"
+version = "0.1.0"
+description = "Tagged Media Downloader"
+homepage = "https://github.com/hrlou/tmdl"
+repository = "https://github.com/hrlou/tmdl"
+keywords = ["sorting", "media", "tags", "booru", "art"]
+edition = "2021"
+
+[dependencies]
+tokio = { version = "*", features = ["full"] }
+mlua = { version = "0.8.0-beta.3", features = ["lua54", "vendored", "serialize"] }
+reqwest = { version = "*", features = [ "blocking", ] }
+futures = "*"
+
+# log = "*"
+# env_logger = "*"
+serde_json = "*"
