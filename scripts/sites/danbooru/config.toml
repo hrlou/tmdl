@@ -3,7 +3,12 @@ domains = [ "danbooru.donmai.us" ]
 cookies = ""
 
 [test]
-url = ""
-tags = [ "general:something" ]
+url = "https://danbooru.donmai.us/posts/3637572"
+# post will check to contain these tags
+tags = [ 
+    { kind = "artist", name = "jokanhiyou" },
+    { kind = "parody", name = "touhou" },
+    { kind = "general", name = "cosplay" },
+]
 
 [custom]

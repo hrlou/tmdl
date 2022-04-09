@@ -5,9 +5,20 @@ function fmatch(str, pattern)
     return match, str
 end
 
+function get_meta(url)
+    local base, gid, token = url:match("https?://([%w%p]+)/g/(%d+)/(%w+)/")
+    post = { ["method"] = "gdata", ["gidlist"] = { { gid, token } }, ["namespace"] = 1 }
+    local meta = request("POST", "https://"..base.."/api.php", json.encode(post), { "Content-Type", "application/json" })
+    meta = json.decode(meta)
+    meta = meta["gmetadata"][1]
+    meta["base"] = base
+    meta["torrents"] = get_torrents(meta)
+    return meta
+end
+
 function get_torrents(meta)
-    local torrents = web.get("https://e-hentai.org/gallerytorrents.php?gid="..meta["gid"].."&t="..meta["token"])
-    local table = {table.unpack(meta["torrents"])}
+    local torrents = request("GET", "https://"..meta["base"].."/gallerytorrents.php?gid="..meta["gid"].."&t="..meta["token"])
+    local table = { table.unpack(meta["torrents"]) }
     for i, t in ipairs(table) do
         table[i]["seeds"], torrents = fmatch(torrents, "Seeds:</span> (%d+)")
         table[i]["peers"], torrents = fmatch(torrents, "Peers:</span> (%d+)")
@@ -17,19 +28,15 @@ function get_torrents(meta)
     return table
 end
 
-function get_meta(url)
-    local gid, token = url:match("g/(%d+)/(%w+)/")
-    post = { ["method"] = "gdata", ["gidlist"] = { { gid, token } }, ["namespace"] = 1 }
-    local meta = web.post("https://api.e-hentai.org/api.php", "application/json", json.encode(post))
-    meta = json.decode(meta)
-    meta = meta["gmetadata"][1]
-    meta["torrents"] = get_torrents(meta)
-    return meta
-end
-
-local meta = get_meta(URL)
+local meta = get_meta(metadata.source)
 for i, t in ipairs(meta["tags"]) do
-    tmdl.push_tag(t:match("([^:]+):([^:]+)"))
+    metadata:push_tag(t:match("([^:]+):([^:]+)"))
 end
 
-tmdl.push_tag("title", meta["title"])
+metadata.title = meta["title"]
+
+-- print(json.encode(meta["torrents"]))
+-- for i, t in ipairs(meta["torrents"]) do
+--     print(t["url"])
+-- end
+-- tmdl.push_tag("title", meta["title"])

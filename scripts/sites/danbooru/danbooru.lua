@@ -1,8 +1,9 @@
--- URL is seeded by tmdl
 -- simple sanitisation step
-URL = URL:gsub("?.*", '')
-local meta = URL..'.json'
-meta = web.get(meta)
+-- metadata is seeded by tmdl
+-- 'metadata.source' is the location of the media
+
+metadata.source = string.gsub(metadata.source, "?.*", '')
+local meta = request("GET", metadata.source..'.json')
 meta = json.decode(meta)
 
 -- get tags
@@ -11,10 +12,9 @@ for i, field in ipairs(fields) do
     for tag in string.gmatch(meta["tag_string_"..field], "[^%s]+") do
         -- for the sake of consistancy
         if field == "copyright" then field = "parody" end
-        tmdl.push_tag(field, tag)
+        metadata:push_tag(field, tag)
     end
 end
 
-tmdl.push_tag("title", "Danbooru #"..meta["id"])
--- print("ID", meta["id"])
--- print("PUSH_FILE", meta["large_file_url"])
+metadata.title = "Danbooru #"..meta["id"]
+metadata:push_file(meta["large_file_url"])
